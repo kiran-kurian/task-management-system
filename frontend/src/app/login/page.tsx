@@ -6,17 +6,15 @@ import { useAuth } from "@/lib/auth-context";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     try {
       await login(email, password);
     } catch (error) {
-      setError("Invalid credentials. Please try again.");
+      console.error("Invalid credentials. Please try again.");
     }
   };
 
@@ -26,7 +24,6 @@ export default function Login() {
         Login to <span className="text-[#FFE600]">Task Manager</span>
       </h1>
       <form onSubmit={handleSubmit} className="w-full sm:w-96 bg-white bg-opacity-80 rounded-lg shadow-lg p-6">
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
         <div className="mb-4">
           <label htmlFor="email" className="block text-lg font-medium text-gray-800">Email Address</label>
           <input

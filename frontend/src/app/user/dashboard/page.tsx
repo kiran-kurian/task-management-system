@@ -15,14 +15,12 @@ export default function UserHome() {
     priority: "",
     dueDate: ""
   });
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const fetchTasks = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -40,10 +38,10 @@ export default function UserHome() {
         setTasks(data);
       } else {
         const errorData = await response.json();
-        setError(errorData.message || `Failed to fetch tasks: ${response.statusText}`);
+        console.error(errorData.message || `Failed to fetch tasks: ${response.statusText}`);
       }
     } catch (error) {
-      setError("An error occurred while fetching tasks.");
+      console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
 
@@ -81,7 +79,6 @@ export default function UserHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -100,13 +97,12 @@ export default function UserHome() {
         setTasks((prevTasks) =>
           prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
         );
-        setError("");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to update task status.");
+        console.error(errorData.message || "Failed to update task status.");
       }
     } catch (error) {
-      setError("An error occurred while updating the task.");
+      console.error("An error occurred while updating the task.");
     }
   }, [router]);
 
@@ -114,7 +110,6 @@ export default function UserHome() {
     <DashboardLayout role="User">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold mb-6">My Tasks</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
         
         {/* Search and Filters */}
         <div className="bg-white bg-opacity-90 rounded-lg shadow-md p-6 mb-8">

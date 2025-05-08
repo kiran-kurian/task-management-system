@@ -23,7 +23,6 @@ export default function ManagerHome() {
     status: Status.TODO,
     assignedToId: 0
   });
-  const [error, setError] = useState("");
   const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const router = useRouter();
@@ -32,7 +31,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -47,12 +45,9 @@ export default function ManagerHome() {
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch users.");
       }
     } catch (error) {
-      setError("An error occurred while fetching users.");
+      console.error("An error occurred while fetching users.");
     }
   }, [router]);
 
@@ -60,7 +55,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -75,11 +69,9 @@ export default function ManagerHome() {
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
-      } else {
-        setError("Failed to fetch tasks.");
       }
     } catch (error) {
-      setError("An error occurred while fetching tasks.");
+      console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
 
@@ -119,7 +111,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -144,13 +135,9 @@ export default function ManagerHome() {
           status: Status.TODO,
           assignedToId: 0
         });
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to create task.");
       }
     } catch (error) {
-      setError("An error occurred while creating the task.");
+      console.error("An error occurred while creating the task.");
     }
   }, [newTask, router]);
 
@@ -161,7 +148,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -183,13 +169,9 @@ export default function ManagerHome() {
           )
         );
         setSelectedTask(null);
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to update task.");
       }
     } catch (error) {
-      setError("An error occurred while updating the task.");
+      console.error("An error occurred while updating the task.");
     }
   }, [selectedTask, router]);
 
@@ -197,7 +179,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -211,13 +192,9 @@ export default function ManagerHome() {
 
       if (response.ok) {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to delete task.");
       }
     } catch (error) {
-      setError("An error occurred while deleting the task.");
+      console.error("An error occurred while deleting the task.");
     }
   }, [router]);
 
@@ -225,7 +202,6 @@ export default function ManagerHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -243,12 +219,9 @@ export default function ManagerHome() {
         setTasks(prevTasks =>
           prevTasks.map(task => task.id === taskId ? updatedTask : task)
         );
-        setError("");
-      } else {
-        setError("Failed to update task status.");
       }
     } catch (error) {
-      setError("An error occurred while updating the task.");
+      console.error("An error occurred while updating the task.");
     }
   }, [router]);
 
@@ -256,7 +229,6 @@ export default function ManagerHome() {
     <DashboardLayout role="Manager">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold mb-6">Team Dashboard</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
         
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">

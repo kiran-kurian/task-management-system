@@ -16,7 +16,6 @@ export default function AdminHome() {
     status: Status.TODO,
     assignedToId: 0
   });
-  const [error, setError] = useState("");
   const [users, setUsers] = useState<{ id: number; name: string; email: string; role: string }[]>([]);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const router = useRouter();
@@ -25,7 +24,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -40,13 +38,9 @@ export default function AdminHome() {
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch tasks.");
       }
     } catch (error) {
-      setError("An error occurred while fetching tasks.");
+      console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
 
@@ -54,7 +48,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -69,13 +62,9 @@ export default function AdminHome() {
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch users.");
       }
     } catch (error) {
-      setError("An error occurred while fetching users.");
+      console.error("An error occurred while fetching users.");
     }
   }, [router]);
 
@@ -88,7 +77,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -103,13 +91,9 @@ export default function AdminHome() {
       if (response.ok) {
         const task = await response.json();
         setSelectedTask(task);
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch task details.");
       }
     } catch (error) {
-      setError("An error occurred while fetching task details.");
+      console.error("An error occurred while fetching task details.");
     }
   };
 
@@ -118,7 +102,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -142,13 +125,9 @@ export default function AdminHome() {
           status: Status.TODO,
           assignedToId: 0
         });
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to create task.");
       }
     } catch (error) {
-      setError("An error occurred while creating the task.");
+      console.error("An error occurred while creating the task.");
     }
   };
 
@@ -156,7 +135,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -177,13 +155,9 @@ export default function AdminHome() {
         if (selectedTask?.id === taskId) {
           setSelectedTask(updatedTask);
         }
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to update task.");
       }
     } catch (error) {
-      setError("An error occurred while updating the task.");
+      console.error("An error occurred while updating the task.");
     }
   };
 
@@ -191,7 +165,6 @@ export default function AdminHome() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("User is not authenticated.");
         router.push("/login");
         return;
       }
@@ -207,13 +180,9 @@ export default function AdminHome() {
         if (selectedTask?.id === taskId) {
           setSelectedTask(null);
         }
-        setError("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to delete task.");
       }
     } catch (error) {
-      setError("An error occurred while deleting the task.");
+      console.error("An error occurred while deleting the task.");
     }
   };
 
@@ -229,7 +198,6 @@ export default function AdminHome() {
             {showUserManagement ? "Show Tasks" : "Show Users"}
           </button>
         </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
         
         {showUserManagement ? (
           <div className="bg-white rounded-lg shadow-md p-6">
