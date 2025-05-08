@@ -1,12 +1,8 @@
-// Get the base URL from environment variables with HTTPS fallback for production
+// Get the base URL from environment variables
 const getBaseUrl = () => {
+  // In production, use the environment variable
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) return envUrl;
-  
-  // In production, default to HTTPS
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://your-api-domain.com'; // Replace with your actual production API domain
-  }
   
   // In development, use localhost
   return 'http://localhost:4000';
