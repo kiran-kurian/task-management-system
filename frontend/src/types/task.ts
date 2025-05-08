@@ -42,4 +42,4 @@ export interface CreateTaskDto {
   assignedToId: number;
 }
 
-export interface UpdateTaskDto extends Partial<CreateTaskDto> {} 
+export type UpdateTaskDto = Partial<CreateTaskDto>; 

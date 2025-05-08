@@ -1,7 +1,7 @@
 "use client";
 
 import DashboardLayout from "@/components/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Task, Status, Priority } from "@/types/task";
 import { ENDPOINTS } from '@/config';
@@ -18,9 +18,38 @@ export default function UserHome() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  const fetchTasks = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User is not authenticated.");
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(ENDPOINTS.TASKS.BASE, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(data);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || `Failed to fetch tasks: ${response.statusText}`);
+      }
+    } catch (error) {
+      setError("An error occurred while fetching tasks.");
+    }
+  }, [router]);
+
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   useEffect(() => {
     const filtered = tasks.filter(task => {
@@ -47,35 +76,6 @@ export default function UserHome() {
 
     setFilteredTasks(sortedTasks);
   }, [tasks, searchTerm, filters]);
-
-  const fetchTasks = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("User is not authenticated.");
-        router.push("/login");
-        return;
-      }
-
-      const response = await fetch(ENDPOINTS.TASKS.BASE, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setTasks(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || `Failed to fetch tasks: ${response.statusText}`);
-      }
-    } catch (err) {
-      setError("An error occurred while fetching tasks.");
-    }
-  };
 
   const updateTaskStatus = async (taskId: number, newStatus: Status) => {
     try {

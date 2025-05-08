@@ -21,8 +21,11 @@ export default function NotificationBell() {
       if (response.ok) {
         const data = await response.json();
         setNotifications(data);
+        setError('');
+      } else {
+        setError('Failed to fetch notifications');
       }
-    } catch (err) {
+    } catch (error) {
       setError('Failed to fetch notifications');
     }
   };
@@ -43,8 +46,11 @@ export default function NotificationBell() {
         setNotifications(notifications.map(notif => 
           notif.id === id ? { ...notif, read: true } : notif
         ));
+        setError('');
+      } else {
+        setError('Failed to mark notification as read');
       }
-    } catch (err) {
+    } catch (error) {
       setError('Failed to mark notification as read');
     }
   };
@@ -90,6 +96,9 @@ export default function NotificationBell() {
         <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
           <div className="p-4">
             <h3 className="text-lg font-semibold mb-4">Notifications</h3>
+            {error && (
+              <p className="text-red-500 text-sm mb-4">{error}</p>
+            )}
             {notifications.length === 0 ? (
               <p className="text-gray-500 text-center">No notifications</p>
             ) : (

@@ -1,7 +1,7 @@
 "use client";
 
 import DashboardLayout from "@/components/Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Task, CreateTaskDto, Priority, Status } from "@/types/task";
 import { ENDPOINTS } from '@/config';
@@ -28,10 +28,65 @@ export default function ManagerHome() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const router = useRouter();
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User is not authenticated.");
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(ENDPOINTS.USERS.BASE, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to fetch users.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching users.");
+    }
+  }, [router]);
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User is not authenticated.");
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(ENDPOINTS.TASKS.BASE, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(data);
+      } else {
+        setError("Failed to fetch tasks.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching tasks.");
+    }
+  }, [router]);
+
   useEffect(() => {
     fetchTasks();
     fetchUsers();
-  }, []);
+  }, [fetchTasks, fetchUsers]);
 
   useEffect(() => {
     const filtered = tasks.filter(task => {
@@ -58,61 +113,6 @@ export default function ManagerHome() {
 
     setFilteredTasks(sortedTasks);
   }, [tasks, searchTerm, filters]);
-
-  const fetchTasks = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("User is not authenticated.");
-        router.push("/login");
-        return;
-      }
-
-      const response = await fetch(ENDPOINTS.TASKS.BASE, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setTasks(data);
-      } else {
-        setError("Failed to fetch tasks.");
-      }
-    } catch (err) {
-      setError("An error occurred while fetching tasks.");
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("User is not authenticated.");
-        router.push("/login");
-        return;
-      }
-
-      const response = await fetch(ENDPOINTS.USERS.BASE, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch users.");
-      }
-    } catch (err) {
-      setError("An error occurred while fetching users.");
-    }
-  };
 
   const createTask = async (e: React.FormEvent) => {
     e.preventDefault();
