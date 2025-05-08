@@ -1,7 +1,7 @@
 "use client";
 
 import DashboardLayout from "@/components/Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Task, CreateTaskDto, Priority, Status } from "@/types/task";
 
@@ -21,12 +21,7 @@ export default function AdminHome() {
   const [showUserManagement, setShowUserManagement] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchTasks();
-    fetchUsers();
-  }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -45,14 +40,49 @@ export default function AdminHome() {
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to fetch tasks.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while fetching tasks.");
     }
-  };
+  }, [router]);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User is not authenticated.");
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch("http://localhost:4000/users", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+        setError("");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to fetch users.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching users.");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    fetchTasks();
+    fetchUsers();
+  }, [fetchTasks, fetchUsers]);
 
   const fetchTaskDetails = async (taskId: number) => {
     try {
@@ -73,40 +103,13 @@ export default function AdminHome() {
       if (response.ok) {
         const task = await response.json();
         setSelectedTask(task);
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to fetch task details.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while fetching task details.");
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("User is not authenticated.");
-        router.push("/login");
-        return;
-      }
-
-      const response = await fetch("http://localhost:4000/users", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch users.");
-      }
-    } catch (err) {
-      setError("An error occurred while fetching users.");
     }
   };
 
@@ -139,11 +142,12 @@ export default function AdminHome() {
           status: Status.TODO,
           assignedToId: 0
         });
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to create task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while creating the task.");
     }
   };
@@ -173,11 +177,12 @@ export default function AdminHome() {
         if (selectedTask?.id === taskId) {
           setSelectedTask(updatedTask);
         }
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while updating the task.");
     }
   };
@@ -202,11 +207,12 @@ export default function AdminHome() {
         if (selectedTask?.id === taskId) {
           setSelectedTask(null);
         }
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to delete task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while deleting the task.");
     }
   };

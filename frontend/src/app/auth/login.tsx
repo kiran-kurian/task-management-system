@@ -17,7 +17,7 @@ export async function login(email: string, password: string) {
     } else {
       console.error("Login failed:", response.statusText);
     }
-  } catch (err) {
-    console.error("An error occurred during login:", err);
+  } catch (error) {
+    console.error("An error occurred during login:", error);
   }
 }

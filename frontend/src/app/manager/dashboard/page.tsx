@@ -114,7 +114,7 @@ export default function ManagerHome() {
     setFilteredTasks(sortedTasks);
   }, [tasks, searchTerm, filters]);
 
-  const createTask = async (e: React.FormEvent) => {
+  const createTask = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
@@ -135,7 +135,7 @@ export default function ManagerHome() {
 
       if (response.ok) {
         const task = await response.json();
-        setTasks([...tasks, task]);
+        setTasks(prevTasks => [...prevTasks, task]);
         setNewTask({
           title: "",
           description: "",
@@ -144,16 +144,17 @@ export default function ManagerHome() {
           status: Status.TODO,
           assignedToId: 0
         });
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to create task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while creating the task.");
     }
-  };
+  }, [newTask, router]);
 
-  const updateTask = async (e: React.FormEvent) => {
+  const updateTask = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedTask) return;
 
@@ -176,20 +177,23 @@ export default function ManagerHome() {
 
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks(tasks.map(task => 
-          task.id === updatedTask.id ? updatedTask : task
-        ));
+        setTasks(prevTasks => 
+          prevTasks.map(task => 
+            task.id === updatedTask.id ? updatedTask : task
+          )
+        );
         setSelectedTask(null);
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while updating the task.");
     }
-  };
+  }, [selectedTask, router]);
 
-  const deleteTask = async (taskId: number) => {
+  const deleteTask = useCallback(async (taskId: number) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -206,17 +210,18 @@ export default function ManagerHome() {
       });
 
       if (response.ok) {
-        setTasks(tasks.filter(task => task.id !== taskId));
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to delete task.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while deleting the task.");
     }
-  };
+  }, [router]);
 
-  const updateTaskStatus = async (taskId: number, newStatus: Status) => {
+  const updateTaskStatus = useCallback(async (taskId: number, newStatus: Status) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -235,16 +240,17 @@ export default function ManagerHome() {
       });
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
+        setTasks(prevTasks =>
+          prevTasks.map(task => task.id === taskId ? updatedTask : task)
         );
+        setError("");
       } else {
         setError("Failed to update task status.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while updating the task.");
     }
-  };
+  }, [router]);
 
   return (
     <DashboardLayout role="Manager">

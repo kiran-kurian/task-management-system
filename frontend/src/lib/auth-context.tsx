@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { ENDPOINTS } from '@/config';
 
@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const authResponse = await fetch(ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
@@ -82,15 +82,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("role");
       throw error;
     }
-  };
+  }, [router]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     setIsAuthenticated(false);
     setRole(null);
     router.push("/login");
-  };
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, role, login, logout }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Notification } from '@/types/notification';
 import { ENDPOINTS } from '@/config';
 
@@ -7,7 +7,7 @@ export default function NotificationBell() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -28,9 +28,9 @@ export default function NotificationBell() {
     } catch (error) {
       setError('Failed to fetch notifications');
     }
-  };
+  }, []);
 
-  const markAsRead = async (id: number) => {
+  const markAsRead = useCallback(async (id: number) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -43,9 +43,11 @@ export default function NotificationBell() {
       });
 
       if (response.ok) {
-        setNotifications(notifications.map(notif => 
-          notif.id === id ? { ...notif, read: true } : notif
-        ));
+        setNotifications(prevNotifications => 
+          prevNotifications.map(notif => 
+            notif.id === id ? { ...notif, read: true } : notif
+          )
+        );
         setError('');
       } else {
         setError('Failed to mark notification as read');
@@ -53,13 +55,13 @@ export default function NotificationBell() {
     } catch (error) {
       setError('Failed to mark notification as read');
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchNotifications]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 

@@ -77,7 +77,7 @@ export default function UserHome() {
     setFilteredTasks(sortedTasks);
   }, [tasks, searchTerm, filters]);
 
-  const updateTaskStatus = async (taskId: number, newStatus: Status) => {
+  const updateTaskStatus = useCallback(async (taskId: number, newStatus: Status) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -100,14 +100,15 @@ export default function UserHome() {
         setTasks((prevTasks) =>
           prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
         );
+        setError("");
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to update task status.");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An error occurred while updating the task.");
     }
-  };
+  }, [router]);
 
   return (
     <DashboardLayout role="User">

@@ -15,7 +15,7 @@ export default function Login() {
 
     try {
       await login(email, password);
-    } catch (err) {
+    } catch (error) {
       setError("Invalid credentials. Please try again.");
     }
   };
