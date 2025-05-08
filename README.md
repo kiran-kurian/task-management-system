@@ -146,21 +146,44 @@ npm run dev           # Start frontend development server
 ### Backend (.env)
 Required environment variables for the backend:
 ```
+# Database Configuration
 DATABASE_URL="postgresql://user:password@localhost:5432/taskmanager"
+
+# JWT Configuration
 JWT_SECRET="your-secret-key"
 JWT_EXPIRES_IN="24h"
+
+# Server Configuration
+PORT=4000
+FRONTEND_URL="http://localhost:3000"
 ```
 Make sure to:
 - Replace user:password with your PostgreSQL credentials
 - Use a strong, unique JWT_SECRET
 - Adjust JWT_EXPIRES_IN as needed
+- Update PORT if you need a different port
+- Set FRONTEND_URL to your frontend application URL in production
 
 ### Frontend (.env)
 Required environment variable for the frontend:
 ```
 NEXT_PUBLIC_API_URL="http://localhost:4000"
 ```
-Update this if your backend runs on a different port or host.
+In production, update this to your backend API URL (e.g., "https://api.yourdomain.com")
+
+### Production Deployment
+When deploying to production:
+1. Frontend:
+   - Set NEXT_PUBLIC_API_URL to your production backend URL
+   - Build the application using `npm run build`
+   - Deploy the built files to your hosting service
+
+2. Backend:
+   - Set all environment variables in your hosting platform
+   - Ensure FRONTEND_URL matches your production frontend URL
+   - Enable CORS only for your frontend domain
+   - Use secure database credentials
+   - Set a strong JWT_SECRET
 
 ## API Documentation
 

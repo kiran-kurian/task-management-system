@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Notification } from '@/types/notification';
+import { ENDPOINTS } from '@/config';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -11,7 +12,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:4000/notifications', {
+      const response = await fetch(ENDPOINTS.NOTIFICATIONS.BASE, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -31,7 +32,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`http://localhost:4000/notifications/${id}/read`, {
+      const response = await fetch(ENDPOINTS.NOTIFICATIONS.READ(id), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

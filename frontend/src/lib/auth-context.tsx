@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { ENDPOINTS } from '@/config';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -18,7 +19,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check authentication status on mount
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
     
@@ -30,8 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // First, authenticate and get the token
-      const authResponse = await fetch("http://localhost:4000/auth/login", {
+      const authResponse = await fetch(ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,11 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("No token received");
       }
 
-      // Store the token
       localStorage.setItem("token", token);
 
-      // Then, get the user's role
-      const roleResponse = await fetch("http://localhost:4000/auth/role", {
+      const roleResponse = await fetch(ENDPOINTS.AUTH.ROLE, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -68,12 +65,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const roleData = await roleResponse.json();
       const userRole = roleData.role;
 
-      // Store the role and update state
       localStorage.setItem("role", userRole);
       setIsAuthenticated(true);
       setRole(userRole);
 
-      // Redirect based on role
       if (userRole === "ADMIN") {
         router.push("/admin/dashboard");
       } else if (userRole === "MANAGER") {
@@ -83,7 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Login error:", error);
-      // Clear any partial authentication data
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       throw error;
@@ -108,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 } 

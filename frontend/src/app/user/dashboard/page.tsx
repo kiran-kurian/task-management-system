@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Task, Status, Priority } from "@/types/task";
+import { ENDPOINTS } from '@/config';
 
 export default function UserHome() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -56,7 +57,7 @@ export default function UserHome() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/tasks", {
+      const response = await fetch(ENDPOINTS.TASKS.BASE, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +86,7 @@ export default function UserHome() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/tasks/${taskId}`, {
+      const response = await fetch(ENDPOINTS.TASKS.BYID(taskId), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

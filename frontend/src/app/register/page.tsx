@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ENDPOINTS } from '@/config';
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -12,7 +13,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:4000/auth/register", {
+    const response = await fetch(ENDPOINTS.AUTH.REGISTER, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

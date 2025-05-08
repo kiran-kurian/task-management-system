@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/Navbar";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Task, CreateTaskDto, Priority, Status } from "@/types/task";
+import { ENDPOINTS } from '@/config';
 
 export default function ManagerHome() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -67,7 +68,7 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/tasks", {
+      const response = await fetch(ENDPOINTS.TASKS.BASE, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +95,7 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/users", {
+      const response = await fetch(ENDPOINTS.USERS.BASE, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +114,7 @@ export default function ManagerHome() {
     }
   };
 
-  const createTask = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const createTask = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
@@ -123,7 +124,7 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/tasks", {
+      const response = await fetch(ENDPOINTS.TASKS.BASE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,9 +132,10 @@ export default function ManagerHome() {
         },
         body: JSON.stringify(newTask),
       });
+
       if (response.ok) {
         const task = await response.json();
-        setTasks((prevTasks) => [...prevTasks, task]);
+        setTasks([...tasks, task]);
         setNewTask({
           title: "",
           description: "",
@@ -143,14 +145,18 @@ export default function ManagerHome() {
           assignedToId: 0
         });
       } else {
-        setError("Failed to create task.");
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to create task.");
       }
     } catch (err) {
       setError("An error occurred while creating the task.");
     }
   };
 
-  const updateTaskStatus = async (taskId: number, newStatus: Status) => {
+  const updateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTask) return;
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -159,21 +165,24 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/tasks/${taskId}`, {
+      const response = await fetch(ENDPOINTS.TASKS.BYID(selectedTask.id), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(selectedTask),
       });
+
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
-        );
+        setTasks(tasks.map(task => 
+          task.id === updatedTask.id ? updatedTask : task
+        ));
+        setSelectedTask(null);
       } else {
-        setError("Failed to update task status.");
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to update task.");
       }
     } catch (err) {
       setError("An error occurred while updating the task.");
@@ -189,23 +198,25 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/tasks/${taskId}`, {
+      const response = await fetch(ENDPOINTS.TASKS.BYID(taskId), {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
         },
       });
+
       if (response.ok) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        setTasks(tasks.filter(task => task.id !== taskId));
       } else {
-        setError("Failed to delete task.");
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to delete task.");
       }
     } catch (err) {
       setError("An error occurred while deleting the task.");
     }
   };
 
-  const updateTask = async (taskId: number, updates: Partial<CreateTaskDto>) => {
+  const updateTaskStatus = async (taskId: number, newStatus: Status) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -214,23 +225,21 @@ export default function ManagerHome() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/tasks/${taskId}`, {
+      const response = await fetch(ENDPOINTS.TASKS.BYID(taskId), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify({ status: newStatus }),
       });
       if (response.ok) {
         const updatedTask = await response.json();
         setTasks((prevTasks) =>
           prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
         );
-        setSelectedTask(null);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to update task.");
+        setError("Failed to update task status.");
       }
     } catch (err) {
       setError("An error occurred while updating the task.");
@@ -452,17 +461,7 @@ export default function ManagerHome() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
               <h3 className="text-lg font-semibold mb-4">Edit Task</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                updateTask(selectedTask.id, {
-                  title: selectedTask.title,
-                  description: selectedTask.description,
-                  dueDate: selectedTask.dueDate,
-                  priority: selectedTask.priority,
-                  status: selectedTask.status,
-                  assignedToId: selectedTask.assignedToId
-                });
-              }}>
+              <form onSubmit={updateTask} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Title</label>
