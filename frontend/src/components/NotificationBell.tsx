@@ -11,7 +11,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(ENDPOINTS.NOTIFICATIONS.BASE, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${ENDPOINTS.NOTIFICATIONS.BASE}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
