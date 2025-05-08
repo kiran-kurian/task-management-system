@@ -1,4 +1,18 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// Get the base URL from environment variables with HTTPS fallback for production
+const getBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl) return envUrl;
+  
+  // In production, default to HTTPS
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://your-api-domain.com'; // Replace with your actual production API domain
+  }
+  
+  // In development, use localhost
+  return 'http://localhost:4000';
+};
+
+export const API_BASE_URL = getBaseUrl();
 
 export const ENDPOINTS = {
   AUTH: {
