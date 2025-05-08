@@ -1,6 +1,6 @@
 export const CONFIG = {
   CORS: {
-    ORIGIN: process.env.FRONTEND_URL || 'http://localhost:3000',
+    ORIGIN: process.env.FRONTEND_URL || 'http://localhost:3000', // Ensure this matches your deployed frontend URL
     METHODS: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     CREDENTIALS: true,
   },
@@ -10,4 +10,4 @@ export const CONFIG = {
     SECRET: process.env.JWT_SECRET,
     EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h',
   },
-}; 
+};

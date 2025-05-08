@@ -1,5 +1,7 @@
 export async function login(email: string, password: string) {
   try {
+    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL); // Debug log
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
       method: "POST",
       headers: {
