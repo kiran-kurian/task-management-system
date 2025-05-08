@@ -1,6 +1,6 @@
 export const CONFIG = {
   CORS: {
-    ORIGIN: process.env.FRONTEND_URL || 'http://localhost:3000', // Ensure this matches your deployed frontend URL
+    ORIGIN: process.env.FRONTEND_URL || 'http://localhost:3000', // Ensure this matches the frontend URL
     METHODS: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     CREDENTIALS: true,
   },
