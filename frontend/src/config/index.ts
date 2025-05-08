@@ -1,8 +1,18 @@
 // Get the base URL from environment variables
 const getBaseUrl = () => {
-  // In production, use the environment variable
+  // Check if we're in production
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Get the environment variable
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl) return envUrl;
+  
+  // In production, ensure we use the production API URL
+  if (isProduction) {
+    // If environment variable is set, use it
+    if (envUrl) return envUrl;
+    // Otherwise use the deployed backend URL
+    return 'https://task-management-system-76t8.onrender.com';
+  }
   
   // In development, use localhost
   return 'http://localhost:4000';
