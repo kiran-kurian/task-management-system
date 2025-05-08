@@ -46,7 +46,7 @@ export default function ManagerHome() {
         const data = await response.json();
         setUsers(data);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching users.");
     }
   }, [router]);
@@ -70,7 +70,7 @@ export default function ManagerHome() {
         const data = await response.json();
         setTasks(data);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
@@ -136,7 +136,7 @@ export default function ManagerHome() {
           assignedToId: 0
         });
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while creating the task.");
     }
   }, [newTask, router]);
@@ -170,7 +170,7 @@ export default function ManagerHome() {
         );
         setSelectedTask(null);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while updating the task.");
     }
   }, [selectedTask, router]);
@@ -193,7 +193,7 @@ export default function ManagerHome() {
       if (response.ok) {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while deleting the task.");
     }
   }, [router]);
@@ -220,7 +220,7 @@ export default function ManagerHome() {
           prevTasks.map(task => task.id === taskId ? updatedTask : task)
         );
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while updating the task.");
     }
   }, [router]);

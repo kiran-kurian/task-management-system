@@ -39,7 +39,7 @@ export default function AdminHome() {
         const data = await response.json();
         setTasks(data);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
@@ -63,7 +63,7 @@ export default function AdminHome() {
         const data = await response.json();
         setUsers(data);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching users.");
     }
   }, [router]);
@@ -92,7 +92,7 @@ export default function AdminHome() {
         const task = await response.json();
         setSelectedTask(task);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching task details.");
     }
   };
@@ -126,7 +126,7 @@ export default function AdminHome() {
           assignedToId: 0
         });
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while creating the task.");
     }
   };
@@ -156,7 +156,7 @@ export default function AdminHome() {
           setSelectedTask(updatedTask);
         }
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while updating the task.");
     }
   };
@@ -181,7 +181,7 @@ export default function AdminHome() {
           setSelectedTask(null);
         }
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while deleting the task.");
     }
   };

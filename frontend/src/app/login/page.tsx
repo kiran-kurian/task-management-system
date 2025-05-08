@@ -13,7 +13,7 @@ export default function Login() {
 
     try {
       await login(email, password);
-    } catch (error) {
+    } catch {
       console.error("Invalid credentials. Please try again.");
     }
   };

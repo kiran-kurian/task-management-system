@@ -40,7 +40,7 @@ export default function UserHome() {
         const errorData = await response.json();
         console.error(errorData.message || `Failed to fetch tasks: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while fetching tasks.");
     }
   }, [router]);
@@ -101,7 +101,7 @@ export default function UserHome() {
         const errorData = await response.json();
         console.error(errorData.message || "Failed to update task status.");
       }
-    } catch (error) {
+    } catch {
       console.error("An error occurred while updating the task.");
     }
   }, [router]);

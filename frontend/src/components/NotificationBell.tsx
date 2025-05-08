@@ -21,7 +21,7 @@ export default function NotificationBell() {
         const data = await response.json();
         setNotifications(data);
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch notifications');
     }
   }, []);
@@ -45,7 +45,7 @@ export default function NotificationBell() {
           )
         );
       }
-    } catch (error) {
+    } catch {
       console.error('Failed to mark notification as read');
     }
   }, []);
